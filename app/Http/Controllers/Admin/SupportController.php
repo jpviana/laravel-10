@@ -2,17 +2,75 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DTO\CreateSupportDTO;
+use App\DTO\UpdateSupportDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SupportRequest;
 use App\Models\Support;
+use App\Services\SupportService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Fluent;
 
 class SupportController extends Controller
 {
-    public function index(Support $support)
+
+    public function __construct(
+        protected SupportService $service
+    ) {
+    }
+
+    public function index(Request $request)
     {
+        $supports = new Fluent($this->service->getAll($request->filter));
 
-        $support->all();
+        return view('admin.supports.index', compact('supports'));
+    }
 
-        return view('admin.supports.index', compact('support'));
+    public function create()
+    {
+        return view('admin.supports.create');
+    }
+
+    public function store(SupportRequest $request)
+    {
+        $this->service->new(CreateSupportDTO::makeFromRequest($request));
+
+        return redirect()->route('supports.index');
+    }
+
+    public function show($id)
+    {
+        if (!$support = $this->service->findOne($id)) {
+            return back();
+        }
+
+        return view('admin.supports.show', compact('support'));
+    }
+
+    public function edit($id)
+    {
+        if (!$support = $this->service->findOne($id)) {
+            return back();
+        }
+
+        return view('admin.supports.edit', compact('support'));
+    }
+
+    public function update(SupportRequest $request, $id)
+    {
+        $support = $this->service->update(UpdateSupportDTO::makeFromRequest($request));
+
+        if (!$support) {
+            return back();
+        }
+
+        return redirect()->route('supports.index');
+    }
+
+    public function destroy($id)
+    {
+        $this->service->delete($id);
+
+        return redirect()->route('supports.index');
     }
 }
