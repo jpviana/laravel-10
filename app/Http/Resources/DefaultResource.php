@@ -14,7 +14,6 @@ class DefaultResource extends JsonResource
      */
     public function toArray(Request $request)
     {
-        dd($request->resource);
-        return collect($request->resource);
+        return collect($this->resource);
     }
 }

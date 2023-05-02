@@ -8,6 +8,7 @@ use App\DTO\UpdateSupportDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SupportRequest;
 use App\Http\Resources\SupportResource;
+use App\Models\Support;
 use App\Services\SupportService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -30,7 +31,6 @@ class SupportController extends Controller
             totalPerPage: $request->get('per_page', 1),
             filter: $request->filter,
         );
-
         return ApiAdapter::toJson($supports);
     }
 
